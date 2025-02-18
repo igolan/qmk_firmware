@@ -16,7 +16,9 @@ enum custom_keycodes {
   PY_USGE, // PyCharm show usages
   PY_IMPL, // PyCharm go to implementation
   MC_HELP,
-  MC_LOCK
+  MC_LOCK,
+  MC_SPCL, // Mac move left a space (custom Mac shortcut)
+  MC_SPCR, // Mac move right a space (custom Mac shortcut)
     // Add other custom keycodes here if needed
 };
 
@@ -40,7 +42,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______, MC_LOCK, _______, _______, PY_RENM, _______, _______, PY_USGE, _______, _______, _______, _______, _______, _______, _______,
         _______, _______, _______, _______, _______, _______, MC_HELP, _______, _______, _______, _______, _______,          PY_IMPL, _______,
         _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______, _______,
-        _______, _______, _______,                            _______,                            _______, _______, _______, _______, _______
+        _______, _______, _______,                            _______,                            _______, _______, MC_SPCL, _______, MC_SPCR
     )
 };
 
@@ -180,6 +182,32 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 unregister_code(KC_Q);
                 unregister_code(KC_LCTL);
                 unregister_code(KC_LGUI);
+            }
+            return false;
+        case MC_SPCR:
+            if (record->event.pressed) {
+                register_code(KC_LGUI);
+                register_code(KC_LSFT);
+                register_code(KC_LALT);
+                register_code(KC_RGHT);
+            } else {
+                unregister_code(KC_RGHT);
+                unregister_code(KC_LGUI);
+                unregister_code(KC_LSFT);
+                unregister_code(KC_LALT);
+            }
+            return false;
+        case MC_SPCL:
+            if (record->event.pressed) {
+                register_code(KC_LGUI);
+                register_code(KC_LSFT);
+                register_code(KC_LALT);
+                register_code(KC_LEFT);
+            } else {
+                unregister_code(KC_LEFT);
+                unregister_code(KC_LGUI);
+                unregister_code(KC_LSFT);
+                unregister_code(KC_LALT);
             }
             return false;
         default:

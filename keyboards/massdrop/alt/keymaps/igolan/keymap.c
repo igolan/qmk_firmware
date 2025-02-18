@@ -8,13 +8,21 @@ enum alt_keycodes {
     DBG_KBD,               //DEBUG Toggle Keyboard Prints
     DBG_MOU,               //DEBUG Toggle Mouse Prints
     MD_BOOT,               //Restart into bootloader after hold timeout
+    ALT_RANGE_END1
+};
+
+enum custom_keycodes {
+  PY_RENM = ALT_RANGE_END1, // Rename variable
+  MC_HELP,
+  MC_LOCK
+    // Add other custom keycodes here if needed
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [0] = LAYOUT_65_ansi_blocker(
         KC_ESC,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC, KC_DEL,
         KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC, KC_RBRC, KC_BSLS, KC_HOME,
-        KC_CAPS, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,          KC_ENT,  KC_PGUP,
+        MO(2),   KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,          KC_ENT,  KC_PGUP,
         KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_RSFT,          KC_UP,   KC_PGDN,
         KC_LCTL, KC_LGUI, KC_LALT,                            KC_SPC,                             KC_RALT, MO(1),   KC_LEFT, KC_DOWN, KC_RGHT
     ),
@@ -25,15 +33,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______, RGB_TOG, _______, _______, _______, MD_BOOT, NK_TOGG, DBG_TOG, _______, _______, _______, _______,          KC_PGUP, KC_VOLD,
         _______, _______, _______,                            _______,                            _______, _______, KC_HOME, KC_PGDN, KC_END
     ),
-    /*
-    [X] = LAYOUT(
+    [2] = LAYOUT_65_ansi_blocker(
         _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
-        _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
-        _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______, _______,
+        _______, MC_LOCK, _______, _______, PY_RENM, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+        _______, _______, _______, _______, _______, _______, MC_HELP, _______, _______, _______, _______, _______,          _______, _______,
         _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______, _______,
         _______, _______, _______,                            _______,                            _______, _______, _______, _______, _______
-    ),
-    */
+    )
 };
 
 #define MODS_SHIFT  (get_mods() & MOD_BIT(KC_LSFT) || get_mods() & MOD_BIT(KC_RSFT))
@@ -109,7 +115,49 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
               }
             }
             return false;
+        case PY_RENM:
+            if (record->event.pressed) {
+                // Press
+                register_code(KC_LSFT);
+                register_code(KC_RSFT);
+                register_code(KC_F6);
+            } else {
+                // Release
+                unregister_code(KC_F6);
+                unregister_code(KC_LSFT);
+                unregister_code(KC_RSFT);
+            }
+            return false;
+        case MC_HELP:
+            if (record->event.pressed) {
+                // Press
+                register_code(KC_LSFT);
+                register_code(KC_RSFT);
+                register_code(KC_LGUI);
+                register_code(KC_SLSH);
+            } else {
+                // Release
+                unregister_code(KC_SLSH);
+                unregister_code(KC_LSFT);
+                unregister_code(KC_RSFT);
+                unregister_code(KC_LGUI);
+            }
+            return false;
+        case MC_LOCK:
+            if (record->event.pressed) {
+                // Press Command + Control + Q
+                register_code(KC_LGUI);    // Left Command
+                register_code(KC_LCTL);    // Left Control
+                register_code(KC_Q);
+            } else {
+                // Release Command + Control + Q
+                unregister_code(KC_Q);
+                unregister_code(KC_LCTL);
+                unregister_code(KC_LGUI);
+            }
+            return false;
         default:
-            return true; //Process all other keycodes normally
+            return true;
     }
 }
+

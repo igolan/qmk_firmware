@@ -12,7 +12,9 @@ enum alt_keycodes {
 };
 
 enum custom_keycodes {
-  PY_RENM = ALT_RANGE_END1, // Rename variable
+  PY_RENM = ALT_RANGE_END1, // PyCharm Rename variable
+  PY_USGE, // PyCharm show usages
+  PY_IMPL, // PyCharm go to implementation
   MC_HELP,
   MC_LOCK
     // Add other custom keycodes here if needed
@@ -35,8 +37,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
     [2] = LAYOUT_65_ansi_blocker(
         _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
-        _______, MC_LOCK, _______, _______, PY_RENM, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
-        _______, _______, _______, _______, _______, _______, MC_HELP, _______, _______, _______, _______, _______,          _______, _______,
+        _______, MC_LOCK, _______, _______, PY_RENM, _______, _______, PY_USGE, _______, _______, _______, _______, _______, _______, _______,
+        _______, _______, _______, _______, _______, _______, MC_HELP, _______, _______, _______, _______, _______,          PY_IMPL, _______,
         _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______, _______,
         _______, _______, _______,                            _______,                            _______, _______, _______, _______, _______
     )
@@ -126,6 +128,30 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 unregister_code(KC_F6);
                 unregister_code(KC_LSFT);
                 unregister_code(KC_RSFT);
+            }
+            return false;
+        case PY_USGE:
+            if (record->event.pressed) {
+                // Press
+                register_code(KC_LALT);
+                register_code(KC_F7);
+            } else {
+                // Release
+                unregister_code(KC_F7);
+                unregister_code(KC_LALT);
+            }
+            return false;
+        case PY_IMPL:
+            if (record->event.pressed) {
+                // Press
+                register_code(KC_LALT);
+                register_code(KC_LGUI);
+                register_code(KC_B);
+            } else {
+                // Release
+                unregister_code(KC_B);
+                unregister_code(KC_LALT);
+                unregister_code(KC_LGUI);
             }
             return false;
         case MC_HELP:
